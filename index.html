@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{BRAND_NAME}} — Tickets, done right.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-2: #141414;
+  --bg-3: #1C1C1C;
+  --bg-4: #242424;
+  --line: rgba(255,255,255,0.07);
+  --line-2: rgba(255,255,255,0.12);
+  --line-3: rgba(255,255,255,0.18);
+  --text: #F5F2EE;
+  --text-2: #A8A39B;
+  --text-3: #6B6760;
+  --accent: #FF6B6B;
+  --accent-2: #FF8F6B;
+  --accent-soft: rgba(255,107,107,0.14);
+  --accent-glow: rgba(255,107,107,0.35);
+  --cream: #F5F2EE;
+  --serif: 'Fraunces', ui-serif, Georgia, serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { border: none; background: none; cursor: pointer; font-family: inherit; color: inherit; }
+img { display: block; max-width: 100%; }
+::selection { background: var(--accent); color: var(--bg); }
+
+/* Grain overlay for texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+}
+
+/* ── NAV ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  background: rgba(10,10,10,0.7);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  display: flex; align-items: center; gap: 10px;
+  color: var(--text);
+}
+.nav-logo-mark {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 16px -4px var(--accent-glow);
+}
+.nav-logo-mark::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bg);
+  animation: flick 2.8s ease-in-out infinite;
+}
+@keyframes flick {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  45% { transform: scale(0.85); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: color .15s;
+  letter-spacing: -0.005em;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.nav-cta {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  transition: transform .2s, box-shadow .2s;
+  letter-spacing: -0.005em;
+}
+.nav-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -8px rgba(245,242,238,0.4);
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 160px 32px 120px;
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.hero-bg-glow {
+  position: absolute;
+  top: -100px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+  filter: blur(80px);
+  z-index: -1;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.hero-bg-glow-2 {
+  position: absolute;
+  top: 200px; right: -200px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(255,143,107,0.25) 0%, transparent 60%);
+  filter: blur(90px);
+  z-index: -1;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 100px;
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 32px;
+  letter-spacing: -0.005em;
+}
+.hero-badge-pill {
+  padding: 3px 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.hero-badge svg { color: var(--accent); }
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(54px, 8vw, 108px);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-bottom: 32px;
+  max-width: 1000px;
+  color: var(--text);
+}
+.hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+  position: relative;
+  display: inline-block;
+}
+.hero h1 .line { display: block; }
+.hero-sub {
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--text-2);
+  max-width: 520px;
+  line-height: 1.55;
+  margin-bottom: 44px;
+  letter-spacing: -0.01em;
+}
+.hero-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 15px 26px;
+  border-radius: 14px;
+  background: var(--text);
+  color: var(--bg);
+  transition: all .25s cubic-bezier(.2,.6,.2,1);
+  letter-spacing: -0.005em;
+  position: relative;
+  box-shadow: 0 2px 8px -2px rgba(245,242,238,0.2);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgba(245,242,238,0.35);
+}
+.btn-primary svg { transition: transform .2s; }
+.btn-primary:hover svg { transform: translateX(3px); }
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 15px 22px;
+  border-radius: 14px;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  transition: all .2s;
+  letter-spacing: -0.005em;
+}
+.btn-secondary:hover { background: var(--bg-3); border-color: var(--line-3); }
+
+/* Stat strip */
+.hero-stats {
+  display: flex;
+  gap: 56px;
+  margin-top: 96px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.stat-item { display: flex; flex-direction: column; gap: 4px; }
+.stat-item-num {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1;
+}
+.stat-item-num em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+.stat-item-lbl {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-2);
+  margin-top: 8px;
+}
+
+/* ── SECTIONS ── */
+.section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+  z-index: 2;
+}
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 80px 0 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.section-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1.02;
+  max-width: 640px;
+}
+.section-title em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+}
+.section-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 10px;
+}
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.live-pill-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4ADE80;
+  box-shadow: 0 0 8px #4ADE80;
+  animation: livepulse 2s ease-in-out infinite;
+}
+@keyframes livepulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* FILTER CHIPS */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.filters::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0;
+  padding: 10px 18px;
+  border-radius: 100px;
+  border: 1px solid var(--line-2);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: all .2s;
+  white-space: nowrap;
+  background: var(--bg-2);
+  letter-spacing: -0.005em;
+}
+.chip:hover {
+  color: var(--text);
+  background: var(--bg-3);
+  border-color: var(--line-3);
+}
+.chip.active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+/* EVENT GRID */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding-bottom: 20px;
+}
+.event-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .3s cubic-bezier(.2,.6,.2,1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.event-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--line-3);
+  box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+}
+.event-img {
+  width: 100%;
+  aspect-ratio: 4/5;
+  background: var(--bg-3);
+  position: relative;
+  overflow: hidden;
+}
+.event-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .6s cubic-bezier(.2,.6,.2,1);
+}
+.event-card:hover .event-img img { transform: scale(1.06); }
+.event-img-placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-3);
+  font-family: var(--serif);
+  font-size: 80px;
+  font-weight: 400;
+  font-style: italic;
+  background: linear-gradient(135deg, var(--bg-3) 0%, var(--bg-2) 100%);
+}
+.event-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.6) 100%);
+  pointer-events: none;
+}
+.event-img-tag {
+  position: absolute;
+  top: 14px; left: 14px;
+  padding: 5px 10px 5px 8px;
+  background: rgba(10,10,10,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  display: flex; align-items: center; gap: 6px;
+  letter-spacing: -0.005em;
+}
+.event-img-tag::before {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+.event-img-date {
+  position: absolute;
+  bottom: 14px; left: 14px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: 12px;
+  padding: 6px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 48px;
+  line-height: 1;
+}
+.event-img-date-month {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+.event-img-date-day {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.event-info {
+  padding: 22px 22px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.event-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.event-venue {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-2);
+  margin-bottom: 22px;
+  display: flex; align-items: center; gap: 7px;
+  letter-spacing: -0.005em;
+}
+.event-venue svg { color: var(--text-3); flex-shrink: 0; }
+.event-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.event-price-wrap { display: flex; flex-direction: column; gap: 2px; }
+.event-price-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.event-price {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.015em;
+}
+.event-price em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+.event-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  padding: 9px 15px;
+  border-radius: 100px;
+  background: var(--bg-4);
+  border: 1px solid var(--line-2);
+  transition: all .25s;
+  letter-spacing: -0.005em;
+}
+.event-card:hover .event-cta {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.event-cta svg { transition: transform .2s; }
+.event-card:hover .event-cta svg { transform: translateX(2px); }
+
+/* Loading */
+.loading {
+  grid-column: 1 / -1;
+  padding: 120px 40px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.loading-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: livepulse 1.4s ease-in-out infinite;
+}
+
+/* ── HOW IT WORKS ── */
+.how-wrap {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding-bottom: 20px;
+}
+.how-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 32px 28px 36px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.how-card:hover { border-color: var(--line-2); }
+.how-card-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  font-style: italic;
+  margin-bottom: 24px;
+}
+.how-card-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.024em;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.how-card-desc {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-2);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+}
+
+/* ── CTA BAND ── */
+.cta-band {
+  margin: 120px 0 80px;
+  padding: 72px 48px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.cta-band::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+  filter: blur(60px);
+  opacity: 0.4;
+}
+.cta-band-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.cta-band-text {
+  max-width: 640px;
+}
+.cta-band h3 {
+  font-family: var(--serif);
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 14px;
+}
+.cta-band h3 em { font-style: italic; font-weight: 500; color: var(--accent); }
+.cta-band p {
+  font-size: 16px;
+  color: var(--text-2);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+}
+.cta-band .btn-primary { font-size: 15px; padding: 16px 28px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 64px 32px 32px;
+  position: relative;
+  z-index: 2;
+}
+.footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 56px;
+  margin-bottom: 56px;
+}
+.footer-brand { max-width: 360px; }
+.footer-tag {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.25;
+  color: var(--text);
+  margin-top: 18px;
+}
+.footer-tag em { font-style: italic; color: var(--accent); }
+.footer-col h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.footer-col a {
+  display: block;
+  font-size: 14px;
+  color: var(--text-2);
+  margin-bottom: 10px;
+  transition: color .15s;
+  letter-spacing: -0.005em;
+}
+.footer-col a:hover { color: var(--text); }
+.footer-bottom {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-3);
+  letter-spacing: -0.005em;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* FADE IN */
+.fade-up { opacity: 0; transform: translateY(14px); animation: fadeUp .8s cubic-bezier(.2,.6,.2,1) forwards; }
+.fade-up:nth-child(1) { animation-delay: 0s; }
+.fade-up:nth-child(2) { animation-delay: .08s; }
+.fade-up:nth-child(3) { animation-delay: .16s; }
+.fade-up:nth-child(4) { animation-delay: .24s; }
+.fade-up:nth-child(5) { animation-delay: .32s; }
+.fade-up:nth-child(6) { animation-delay: .4s; }
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* MOBILE */
+@media (max-width: 960px) {
+  .nav { padding: 14px 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 110px 20px 80px; }
+  .section { padding: 0 20px; }
+  .hero-stats { gap: 32px 48px; margin-top: 56px; padding-top: 28px; }
+  .section-header { padding: 48px 0 24px; }
+  .event-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .how-wrap { grid-template-columns: 1fr; }
+  .cta-band { padding: 48px 28px; border-radius: 20px; margin: 80px 0 48px; }
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 36px; }
+  footer { padding: 48px 20px 24px; }
+}
+@media (max-width: 560px) {
+  .event-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .hero h1 { font-size: 52px; }
+  .hero-sub { font-size: 16px; }
+  .stat-item-num { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <span class="nav-logo-mark"></span>
+    Flicker
+  </a>
+  <div class="nav-links">
+    <a href="#events">Events</a>
+    <a href="#how">How it works</a>
+    <a href="#about">About</a>
+  </div>
+  <div class="nav-right">
+    <a href="/login.html" class="nav-cta">Sell tickets</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-glow"></div>
+  <div class="hero-bg-glow-2"></div>
+
+  <div class="hero-badge fade-up">
+    <span class="hero-badge-pill">New</span>
+    Built for campus nightlife
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <h1 class="fade-up">
+    <span class="line">Tickets, <em>done right.</em></span>
+    <span class="line">Nights worth catching.</span>
+  </h1>
+
+  <p class="hero-sub fade-up">
+    The simplest way to sell and buy tickets to the events your campus actually talks about. Zero bots. Zero scalpers. Zero hassle.
+  </p>
+
+  <div class="hero-actions fade-up">
+    <a href="#events" class="btn-primary">
+      Browse events
+      <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="/login.html" class="btn-secondary">
+      Host an event
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 3v8M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+
+  <div class="hero-stats fade-up">
+    <div class="stat-item">
+      <div class="stat-item-num"><em>0.5</em>s</div>
+      <div class="stat-item-lbl">average checkout</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-item-num">100<em>%</em></div>
+      <div class="stat-item-lbl">mobile-ready tickets</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-item-num"><em>0</em></div>
+      <div class="stat-item-lbl">bots allowed</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-item-num">30<em>+</em></div>
+      <div class="stat-item-lbl">partner schools</div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<div class="section" id="events">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">What's on</div>
+      <h2 class="section-title">Upcoming <em>events.</em></h2>
+    </div>
+    <div class="section-meta">
+      <div class="live-pill">
+        <span class="live-pill-dot"></span>
+        <span id="event-count">—</span> on sale
+      </div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="chip active" data-cat="all">All events</button>
+    <button class="chip" data-cat="Nightlife">Nightlife</button>
+    <button class="chip" data-cat="Music">Music</button>
+    <button class="chip" data-cat="Sports">Sports</button>
+    <button class="chip" data-cat="Social">Social</button>
+    <button class="chip" data-cat="Other">Other</button>
+  </div>
+
+  <div id="event-grid" class="event-grid">
+    <div class="loading">
+      <span class="loading-dot"></span>Loading events…
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section" id="how">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">The flow</div>
+      <h2 class="section-title">How it <em>works.</em></h2>
+    </div>
+  </div>
+  <div class="how-wrap">
+    <div class="how-card">
+      <div class="how-card-num">01</div>
+      <div class="how-card-title">Find an event</div>
+      <div class="how-card-desc">Browse verified campus events from trusted hosts. Every ticket backed by a real organizer, never a reseller.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-card-num">02</div>
+      <div class="how-card-title">Pay in seconds</div>
+      <div class="how-card-desc">Apple Pay, Google Pay, or card. Your ticket lands instantly with a scannable QR code and a receipt.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-card-num">03</div>
+      <div class="how-card-title">Walk right in</div>
+      <div class="how-card-desc">Show your phone at the door. No printouts, no fumbling through email, no will-call lines.</div>
+    </div>
+  </div>
+
+  <div class="cta-band">
+    <div class="cta-band-inner">
+      <div class="cta-band-text">
+        <h3>Hosting an event? <em>Start selling in minutes.</em></h3>
+        <p>Create your event, set your tiers, and share a link. We handle payments, tickets, and the door. You keep 90% — no monthly fees, no surprises.</p>
+      </div>
+      <a href="/login.html" class="btn-primary">
+        Become a host
+        <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer id="about">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="nav-logo">
+        <span class="nav-logo-mark"></span>
+        Flicker
+      </a>
+      <p class="footer-tag">Built for <em>the moments</em> you'll remember.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#events">Events</a>
+      <a href="#how">How it works</a>
+      <a href="/login.html">Sell tickets</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#about">About us</a>
+      <a href="#">Contact</a>
+      <a href="#">Careers</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Terms</a>
+      <a href="#">Privacy</a>
+      <a href="#">Refunds</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 {{ORGANIZER_NAME}}, LLC. All rights reserved.</div>
+    <div>Made with care in {{LOCATION}}.</div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = window.BRAND.supabaseUrl;
+const SUPABASE_KEY = window.BRAND.supabaseAnonKey;
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let allEvents = [];
+let currentFilter = 'all';
+
+async function loadEvents() {
+  const { data, error } = await db
+    .from('events')
+    .select('*, ticket_tiers(*)')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error(error);
+    document.getElementById('event-grid').innerHTML = `<div class="loading">Couldn't load events</div>`;
+    return;
+  }
+  allEvents = data || [];
+  document.getElementById('event-count').textContent = allEvents.length;
+  render();
+}
+
+function parseDate(d) {
+  if (!d) return null;
+  // Handle "Saturday, August 22, 2026"
+  if (d.includes && d.includes(',')) {
+    const parts = d.split(',').map(s => s.trim());
+    // parts: ["Saturday", "August 22", "2026"]
+    if (parts.length >= 3) {
+      const [month, day] = parts[1].split(' ');
+      return { month: month.slice(0,3).toUpperCase(), day: day, full: d };
+    }
+  }
+  try {
+    const dt = new Date(d);
+    if (!isNaN(dt)) {
+      return {
+        month: dt.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+        day: dt.getDate(),
+        full: d,
+      };
+    }
+  } catch {}
+  return { month: 'TBA', day: '—', full: d };
+}
+
+function render() {
+  const grid = document.getElementById('event-grid');
+  const filtered = currentFilter === 'all'
+    ? allEvents
+    : allEvents.filter(e => e.category === currentFilter);
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="loading">No events in this category yet</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((e, i) => {
+    const tiers = (e.ticket_tiers || []).sort((a,b) => a.price - b.price);
+    const minPrice = tiers.length ? tiers[0].price : null;
+    const img = e.photo_url
+      ? `<img src="${e.photo_url}" alt="${e.name}"><div class="event-img-overlay"></div>`
+      : `<div class="event-img-placeholder">${(e.name||'?').charAt(0)}</div>`;
+    const d = parseDate(e.date);
+    const delay = Math.min(i * 0.06, 0.4);
+    return `
+      <a href="/event.html?id=${e.id}" class="event-card fade-up" style="animation-delay:${delay}s">
+        <div class="event-img">
+          ${img}
+          <div class="event-img-tag">${e.category || 'Event'}</div>
+          ${d ? `<div class="event-img-date">
+            <div class="event-img-date-month">${d.month}</div>
+            <div class="event-img-date-day">${d.day}</div>
+          </div>` : ''}
+        </div>
+        <div class="event-info">
+          <div class="event-name">${e.name}</div>
+          <div class="event-venue">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 13s4-4 4-7a4 4 0 10-8 0c0 3 4 7 4 7z"/><circle cx="7" cy="6" r="1.5"/></svg>
+            ${e.venue || 'Venue TBA'}
+          </div>
+          <div class="event-footer">
+            <div class="event-price-wrap">
+              <div class="event-price-label">From</div>
+              <div class="event-price"><em>$</em>${minPrice !== null ? Number(minPrice).toFixed(0) : '—'}</div>
+            </div>
+            <span class="event-cta">
+              Tickets
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+      </a>
+    `;
+  }).join('');
+}
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.cat;
+    render();
+  });
+});
+
+loadEvents();
+</script>
+<script>
+// Apply brand config to page after load
+document.addEventListener('DOMContentLoaded', () => {
+  const B = window.BRAND;
+  if (!B) return;
+  document.documentElement.style.setProperty('--accent', B.accentColor);
+  document.documentElement.style.setProperty('--accent-soft', B.accentColor + '24');
+  document.documentElement.style.setProperty('--accent-glow', B.accentColor + '59');
+  // Replace placeholders
+  const html = document.body.innerHTML;
+  document.body.innerHTML = html
+    .replaceAll('{{BRAND_NAME}}', B.name)
+    .replaceAll('{{ORGANIZER_NAME_UPPER}}', (B.organizerName||'').toUpperCase())
+    .replaceAll('{{ORGANIZER_NAME}}', B.organizerName||'')
+    .replaceAll('{{ORGANIZER_INITIALS}}', B.organizerInitials||'')
+    .replaceAll('{{LEGAL_NAME}}', B.legalName||'')
+    .replaceAll('{{LOCATION}}', B.location||'')
+    .replaceAll('{{TAGLINE}}', B.tagline||'');
+  // Update title
+  document.title = document.title.replaceAll('{{BRAND_NAME}}', B.name);
+});
+</script>
+</body>
+</html>
