@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Event — {{BRAND_NAME}}</title>
+<title>Event — Bookr</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -559,6 +559,46 @@ h1.event-title {
   gap: 6px;
 }
 
+/* APPLE PAY BUTTON */
+#apple-pay-btn-wrap {
+  margin-bottom: 14px;
+  display: none;
+}
+#apple-pay-btn-wrap.visible { display: block; }
+#apple-pay-button {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  background-color: black;
+  background-image: -webkit-named-image(apple-pay-logo-white);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto 60%;
+  cursor: pointer;
+  border: none;
+  -webkit-appearance: -apple-pay-button;
+  appearance: -apple-pay-button;
+  -apple-pay-button-type: plain;
+  -apple-pay-button-style: black;
+}
+.pay-divider {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.pay-divider.visible { display: flex; }
+.pay-divider::before, .pay-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line-2);
+}
+
 #stripe-payment-element { margin-bottom: 14px; }
 #stripe-error {
   color: var(--danger);
@@ -759,7 +799,7 @@ h1.event-title {
 <nav class="nav">
   <a href="/" class="nav-logo">
     <span class="nav-logo-mark"></span>
-    Flicker
+    Bookr
   </a>
   <a href="/" class="nav-back">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 7H3m0 0l3.5-3.5M3 7l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -874,6 +914,10 @@ function shortDate(d) {
 }
 
 function render() {
+  const B = window.BRAND;
+  const organizerName = B ? (B.organizerName || 'Bookr Events') : 'Bookr Events';
+  const organizerInitials = B ? (B.organizerInitials || 'BE') : 'BE';
+
   const img = EVENT.photo_url
     ? `<img src="${EVENT.photo_url}" alt="${EVENT.name}">`
     : `<div class="event-hero-placeholder">${(EVENT.name||'?').charAt(0)}</div>`;
@@ -935,10 +979,10 @@ function render() {
 
         <div class="event-section-title">Hosted by</div>
         <div class="organizer">
-          <div class="org-avatar">{{ORGANIZER_INITIALS}}</div>
+          <div class="org-avatar">${organizerInitials}</div>
           <div class="org-info">
             <div class="lbl">Presented by</div>
-            <div class="name">{{ORGANIZER_NAME}}</div>
+            <div class="name">${organizerName}</div>
             <div class="org-verify">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1L2 3v3c0 2.5 1.7 4.5 4 5 2.3-0.5 4-2.5 4-5V3L6 1zm-.5 6.5L3 5l.7-.7L5.5 6l2.8-2.8.7.7L5.5 7.5z"/></svg>
               Verified host
@@ -1004,6 +1048,10 @@ function render() {
           <div class="checkout-step" id="step3">
             <div class="summary" id="summary3"></div>
             <div class="step-label">Payment</div>
+            <div id="apple-pay-btn-wrap">
+              <button id="apple-pay-button" onclick="handleApplePay()"></button>
+            </div>
+            <div class="pay-divider" id="pay-divider">or pay with card</div>
             <div id="stripe-payment-element"></div>
             <div id="stripe-error"></div>
             <div class="secure-note">
@@ -1125,6 +1173,7 @@ function flashField(id) {
 const stripeInstance = Stripe(window.BRAND.stripePublishableKey);
 let stripeElements = null;
 let stripePaymentElement = null;
+let paymentRequest = null;
 
 async function initStripe() {
   if (!EVENT) return;
@@ -1132,6 +1181,7 @@ async function initStripe() {
   const sub = t.price * qty;
   const fee = Math.round(sub * 0.1 * 100) / 100;
   const total = sub + fee;
+  const totalCents = Math.round(total * 100);
 
   try {
     const res = await fetch('/api/create-payment-intent', {
@@ -1146,6 +1196,46 @@ async function initStripe() {
     });
     const { clientSecret, error } = await res.json();
     if (error) throw new Error(error);
+
+    // Setup Apple Pay / Payment Request
+    paymentRequest = stripeInstance.paymentRequest({
+      country: 'US',
+      currency: 'usd',
+      total: {
+        label: EVENT.name,
+        amount: totalCents,
+      },
+      requestPayerName: false,
+      requestPayerEmail: false,
+    });
+
+    const prAvailability = await paymentRequest.canMakePayment();
+    if (prAvailability && prAvailability.applePay) {
+      const appleWrap = document.getElementById('apple-pay-btn-wrap');
+      const divider = document.getElementById('pay-divider');
+      if (appleWrap) appleWrap.classList.add('visible');
+      if (divider) divider.classList.add('visible');
+
+      paymentRequest.on('paymentmethod', async (ev) => {
+        const { error: confirmError, paymentIntent } = await stripeInstance.confirmCardPayment(
+          clientSecret,
+          { payment_method: ev.paymentMethod.id },
+          { handleActions: false }
+        );
+        if (confirmError) {
+          ev.complete('fail');
+        } else {
+          ev.complete('success');
+          if (paymentIntent.status === 'requires_action') {
+            await stripeInstance.confirmCardPayment(clientSecret);
+          }
+          document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
+          document.getElementById('stepIndicator').style.display = 'none';
+          document.getElementById('processing').classList.add('active');
+          await showConfirmation();
+        }
+      });
+    }
 
     const appearance = {
       theme: 'night',
@@ -1167,6 +1257,10 @@ async function initStripe() {
     console.error('initStripe error:', err);
     document.getElementById('stripe-error').textContent = 'Error: ' + err.message;
   }
+}
+
+function handleApplePay() {
+  if (paymentRequest) paymentRequest.show();
 }
 
 async function handlePayment() {
@@ -1218,9 +1312,9 @@ async function showConfirmation() {
   await db.from('orders').insert({
     event_id: EVENT.id,
     tier_id: t.id,
-    buyer_name: document.getElementById('buyerName').value.trim(),
-    buyer_email: document.getElementById('buyerEmail').value.trim(),
-    buyer_phone: document.getElementById('buyerPhone').value.trim(),
+    buyer_name: document.getElementById('buyerName') ? document.getElementById('buyerName').value.trim() : 'Apple Pay',
+    buyer_email: document.getElementById('buyerEmail') ? document.getElementById('buyerEmail').value.trim() : '',
+    buyer_phone: document.getElementById('buyerPhone') ? document.getElementById('buyerPhone').value.trim() : '',
     quantity: qty,
     total: parseFloat(total),
     status: 'paid'
@@ -1231,8 +1325,8 @@ async function showConfirmation() {
 
   document.getElementById('cEventName').textContent = EVENT.name;
   document.getElementById('cRef').textContent = ref;
-  document.getElementById('cEmailLine').textContent = document.getElementById('buyerEmail').value.trim();
-  document.getElementById('cName').textContent = document.getElementById('buyerName').value.trim();
+  document.getElementById('cEmailLine').textContent = document.getElementById('buyerEmail') ? document.getElementById('buyerEmail').value.trim() : '';
+  document.getElementById('cName').textContent = document.getElementById('buyerName') ? document.getElementById('buyerName').value.trim() : 'Apple Pay';
   document.getElementById('cTier').textContent = `${t.name} × ${qty}`;
   document.getElementById('cTotal').textContent = `$${total}`;
   document.getElementById('cPayTime').textContent = `${dateStr} at ${timeStr}`;
@@ -1266,28 +1360,6 @@ function fp(r,c) {
 }
 
 loadEvent();
-</script>
-<script>
-// Apply brand config to page after load
-document.addEventListener('DOMContentLoaded', () => {
-  const B = window.BRAND;
-  if (!B) return;
-  document.documentElement.style.setProperty('--accent', B.accentColor);
-  document.documentElement.style.setProperty('--accent-soft', B.accentColor + '24');
-  document.documentElement.style.setProperty('--accent-glow', B.accentColor + '59');
-  // Replace placeholders
-  const html = document.body.innerHTML;
-  document.body.innerHTML = html
-    .replaceAll('{{BRAND_NAME}}', B.name)
-    .replaceAll('{{ORGANIZER_NAME_UPPER}}', (B.organizerName||'').toUpperCase())
-    .replaceAll('{{ORGANIZER_NAME}}', B.organizerName||'')
-    .replaceAll('{{ORGANIZER_INITIALS}}', B.organizerInitials||'')
-    .replaceAll('{{LEGAL_NAME}}', B.legalName||'')
-    .replaceAll('{{LOCATION}}', B.location||'')
-    .replaceAll('{{TAGLINE}}', B.tagline||'');
-  // Update title
-  document.title = document.title.replaceAll('{{BRAND_NAME}}', B.name);
-});
 </script>
 </body>
 </html>
