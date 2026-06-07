@@ -1320,6 +1320,11 @@ async function showConfirmation() {
     status: 'paid'
   });
 
+  // Increment sold count on the tier
+  await db.from('ticket_tiers')
+    .update({ sold: (t.sold || 0) + qty })
+    .eq('id', t.id);
+
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('confirmInner').classList.add('active');
 
