@@ -24,7 +24,6 @@ module.exports = async (req, res) => {
     if (tierId) {
       const supabaseUrl = process.env.SUPABASE_URL;
       const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
-
       if (supabaseUrl && supabaseKey) {
         const tierRes = await fetch(`${supabaseUrl}/rest/v1/ticket_tiers?id=eq.${tierId}&select=sold,capacity`, {
           headers: {
@@ -47,10 +46,12 @@ module.exports = async (req, res) => {
       }
     }
 
+    // Do NOT specify payment_method_types — using automatic_payment_methods
+    // lets Stripe enable all available methods including Apple Pay and Google Pay
     const params = new URLSearchParams();
     params.append('amount', Math.round(Number(amount) * 100));
     params.append('currency', 'usd');
-    params.append('payment_method_types[]', 'card');
+    params.append('automatic_payment_methods[enabled]', 'true');
     if (buyerEmail) params.append('receipt_email', buyerEmail);
     if (eventName) params.append('metadata[event]', eventName);
     if (tierName) params.append('metadata[tier]', tierName);
@@ -63,10 +64,12 @@ module.exports = async (req, res) => {
       },
       body: params.toString(),
     });
+
     const data = await response.json();
     if (data.error) {
       return res.status(400).json({ error: data.error.message });
     }
+
     res.status(200).json({ clientSecret: data.client_secret });
   } catch (err) {
     res.status(500).json({ error: err.message });
