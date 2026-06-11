@@ -1174,6 +1174,7 @@ const stripeInstance = Stripe(window.BRAND.stripePublishableKey);
 let stripeElements = null;
 let stripePaymentElement = null;
 let paymentRequest = null;
+let currentClientSecret = null;
 
 async function initStripe() {
   if (!EVENT) return;
@@ -1196,8 +1197,10 @@ async function initStripe() {
     });
     const { clientSecret, error } = await res.json();
     if (error) throw new Error(error);
+    currentClientSecret = clientSecret;
 
-    // Setup Apple Pay / Payment Request
+    // ── Apple Pay via Payment Request Button ──
+    // Must be created before elements() so it uses the same payment intent
     paymentRequest = stripeInstance.paymentRequest({
       country: 'US',
       currency: 'usd',
@@ -1205,11 +1208,13 @@ async function initStripe() {
         label: EVENT.name,
         amount: totalCents,
       },
-      requestPayerName: false,
-      requestPayerEmail: false,
+      requestPayerName: true,
+      requestPayerEmail: true,
     });
 
     const prAvailability = await paymentRequest.canMakePayment();
+    console.log('Apple Pay availability:', prAvailability);
+
     if (prAvailability && prAvailability.applePay) {
       const appleWrap = document.getElementById('apple-pay-btn-wrap');
       const divider = document.getElementById('pay-divider');
@@ -1217,18 +1222,21 @@ async function initStripe() {
       if (divider) divider.classList.add('visible');
 
       paymentRequest.on('paymentmethod', async (ev) => {
-        const { error: confirmError, paymentIntent } = await stripeInstance.confirmCardPayment(
-          clientSecret,
-          { payment_method: ev.paymentMethod.id },
-          { handleActions: false }
-        );
+        // Confirm the payment intent with the Apple Pay payment method
+        const { error: confirmError, paymentIntent } = await stripeInstance.confirmPayment({
+          clientSecret: currentClientSecret,
+          confirmParams: {
+            payment_method: ev.paymentMethod.id,
+            return_url: window.location.href,
+          },
+          redirect: 'if_required',
+        });
+
         if (confirmError) {
           ev.complete('fail');
+          document.getElementById('stripe-error').textContent = confirmError.message;
         } else {
           ev.complete('success');
-          if (paymentIntent.status === 'requires_action') {
-            await stripeInstance.confirmCardPayment(clientSecret);
-          }
           document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
           document.getElementById('stepIndicator').style.display = 'none';
           document.getElementById('processing').classList.add('active');
@@ -1237,6 +1245,7 @@ async function initStripe() {
       });
     }
 
+    // ── Card payment via Payment Element ──
     const appearance = {
       theme: 'night',
       variables: {
@@ -1251,7 +1260,9 @@ async function initStripe() {
     };
 
     stripeElements = stripeInstance.elements({ appearance, clientSecret });
-    stripePaymentElement = stripeElements.create('payment');
+    stripePaymentElement = stripeElements.create('payment', {
+      wallets: { applePay: 'never', googlePay: 'never' }
+    });
     stripePaymentElement.mount('#stripe-payment-element');
   } catch(err) {
     console.error('initStripe error:', err);
