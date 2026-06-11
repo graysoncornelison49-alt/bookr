@@ -1336,6 +1336,28 @@ async function showConfirmation() {
     .update({ sold: (t.sold || 0) + qty })
     .eq('id', t.id);
 
+  // Send ticket confirmation email
+  try {
+    await fetch('/api/send-ticket-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        buyerEmail: document.getElementById('buyerEmail') ? document.getElementById('buyerEmail').value.trim() : '',
+        buyerName: document.getElementById('buyerName') ? document.getElementById('buyerName').value.trim() : '',
+        eventName: EVENT.name,
+        tierName: t.name,
+        quantity: qty,
+        total: total,
+        ref: ref,
+        eventDate: EVENT.date ? formatDate(EVENT.date) : '',
+        eventVenue: EVENT.venue || '',
+      })
+    });
+  } catch(emailErr) {
+    console.error('Email send failed:', emailErr);
+    // Don't block confirmation if email fails
+  }
+
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('confirmInner').classList.add('active');
 
