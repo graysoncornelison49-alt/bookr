@@ -7,18 +7,13 @@ module.exports = async (req, res) => {
 
   try {
     let body = req.body;
-    if (typeof body === 'string') {
-      body = JSON.parse(body);
-    }
+    if (typeof body === 'string') body = JSON.parse(body);
+
     const { amount, eventName, tierName, buyerEmail, tierId, quantity } = body || {};
 
     const secretKey = process.env.STRIPE_SECRET_KEY;
-    if (!secretKey) {
-      return res.status(500).json({ error: 'Stripe secret key not configured' });
-    }
-    if (!amount || isNaN(amount)) {
-      return res.status(400).json({ error: 'Invalid amount: ' + amount });
-    }
+    if (!secretKey) return res.status(500).json({ error: 'Stripe secret key not configured' });
+    if (!amount || isNaN(amount)) return res.status(400).json({ error: 'Invalid amount: ' + amount });
 
     // Check tier availability in Supabase if tierId is provided
     if (tierId) {
@@ -36,23 +31,17 @@ module.exports = async (req, res) => {
           const tier = tiers[0];
           const requestedQty = quantity || 1;
           const remaining = (tier.capacity || 999) - (tier.sold || 0);
-          if (remaining <= 0) {
-            return res.status(400).json({ error: 'This ticket tier is sold out.' });
-          }
-          if (requestedQty > remaining) {
-            return res.status(400).json({ error: `Only ${remaining} ticket(s) remaining for this tier.` });
-          }
+          if (remaining <= 0) return res.status(400).json({ error: 'This ticket tier is sold out.' });
+          if (requestedQty > remaining) return res.status(400).json({ error: `Only ${remaining} ticket(s) remaining for this tier.` });
         }
       }
     }
 
-    // Do NOT specify payment_method_types — using automatic_payment_methods
-    // lets Stripe enable all available methods including Apple Pay and Google Pay
     const params = new URLSearchParams();
     params.append('amount', Math.round(Number(amount) * 100));
     params.append('currency', 'usd');
     params.append('automatic_payment_methods[enabled]', 'true');
-    if (buyerEmail) params.append('receipt_email', buyerEmail);
+    // receipt_email intentionally omitted — we send our own Bookr receipt via Resend
     if (eventName) params.append('metadata[event]', eventName);
     if (tierName) params.append('metadata[tier]', tierName);
 
@@ -66,9 +55,7 @@ module.exports = async (req, res) => {
     });
 
     const data = await response.json();
-    if (data.error) {
-      return res.status(400).json({ error: data.error.message });
-    }
+    if (data.error) return res.status(400).json({ error: data.error.message });
 
     res.status(200).json({ clientSecret: data.client_secret });
   } catch (err) {
