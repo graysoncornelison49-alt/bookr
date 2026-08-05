@@ -21,7 +21,11 @@
       "headers": [
         {
           "key": "Content-Type",
-          "value": "application/json"
+          "value": "application/octet-stream"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=apple-developer-merchantid-domain-association"
         },
         {
           "key": "Cache-Control",
