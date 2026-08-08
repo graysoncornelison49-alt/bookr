@@ -1,8 +1,3 @@
-const { randomUUID } = require('crypto');
-
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
-
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -14,69 +9,49 @@ module.exports = async (req, res) => {
     let body = req.body;
     if (typeof body === 'string') body = JSON.parse(body);
 
-    const { sourceId, amount, eventName, tierName, tierId, eventId, buyerEmail, buyerName, buyerPhone, quantity } = body || {};
+    const { amount, eventName, tierName, buyerEmail, tierId, quantity } = body || {};
+    const secretKey = process.env.STRIPE_SECRET_KEY;
 
-    const accessToken = process.env.SQUARE_ACCESS_TOKEN;
-    const locationId = process.env.SQUARE_LOCATION_ID;
+    if (!secretKey) return res.status(500).json({ error: 'Stripe secret key not configured' });
+    if (!amount || isNaN(amount)) return res.status(400).json({ error: 'Invalid amount: ' + amount });
 
-    if (!accessToken || !locationId) {
-      return res.status(500).json({ error: 'Square credentials not configured' });
-    }
-
-    if (!sourceId || !amount || isNaN(amount)) {
-      return res.status(400).json({ error: 'Missing sourceId or invalid amount' });
-    }
-
-    // Check tier availability before charging
     if (tierId) {
-      const tierRes = await fetch(`${SUPABASE_URL}/rest/v1/ticket_tiers?id=eq.${tierId}&select=sold,capacity,event_id`, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+      if (supabaseUrl && supabaseKey) {
+        const tierRes = await fetch(`${supabaseUrl}/rest/v1/ticket_tiers?id=eq.${tierId}&select=sold,capacity`, {
+          headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
+        });
+        const tiers = await tierRes.json();
+        if (tiers && tiers.length > 0) {
+          const tier = tiers[0];
+          const requestedQty = quantity || 1;
+          const remaining = (tier.capacity || 999) - (tier.sold || 0);
+          if (remaining <= 0) return res.status(400).json({ error: 'This ticket tier is sold out.' });
+          if (requestedQty > remaining) return res.status(400).json({ error: `Only ${remaining} ticket(s) remaining for this tier.` });
         }
-      });
-      const tierData = await tierRes.json();
-      if (!tierData || !tierData[0]) {
-        return res.status(400).json({ error: 'Invalid ticket tier.' });
-      }
-      const { sold, capacity, event_id } = tierData[0];
-      if (event_id !== eventId) {
-        return res.status(400).json({ error: 'Ticket tier does not belong to this event.' });
-      }
-      const requestedQty = quantity || 1;
-      if (capacity > 0 && (sold + requestedQty) > capacity) {
-        return res.status(400).json({ error: 'Sorry, this ticket tier is sold out.' });
       }
     }
 
-    // Charge via Square
-    const amountCents = Math.round(Number(amount) * 100);
-    const squareRes = await fetch('https://connect.squareup.com/v2/payments', {
+    const params = new URLSearchParams();
+    params.append('amount', Math.round(Number(amount) * 100));
+    params.append('currency', 'usd');
+    params.append('automatic_payment_methods[enabled]', 'true');
+    if (eventName) params.append('metadata[event]', eventName);
+    if (tierName) params.append('metadata[tier]', tierName);
+
+    const response = await fetch('https://api.stripe.com/v1/payment_intents', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'Square-Version': '2024-01-18',
+        'Authorization': `Bearer ${secretKey}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({
-        source_id: sourceId,
-        idempotency_key: randomUUID(),
-        amount_money: { amount: amountCents, currency: 'USD' },
-        location_id: locationId,
-        buyer_email_address: buyerEmail || undefined,
-        note: `${eventName || 'Event'} — ${tierName || 'Ticket'}`,
-      }),
+      body: params.toString(),
     });
 
-    const squareData = await squareRes.json();
-    if (squareData.errors && squareData.errors.length > 0) {
-      return res.status(400).json({ error: squareData.errors[0].detail || 'Payment failed' });
-    }
-
-    res.status(200).json({
-      paymentId: squareData.payment.id,
-      status: squareData.payment.status,
-    });
+    const data = await response.json();
+    if (data.error) return res.status(400).json({ error: data.error.message });
+    res.status(200).json({ clientSecret: data.client_secret });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
