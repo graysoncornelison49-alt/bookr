@@ -13,10 +13,10 @@
       "maxDuration": 5
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/.well-known/apple-developer-merchantid-domain-association",
-      "destination": "/api/well-known"
+      "src": "/.well-known/apple-developer-merchantid-domain-association",
+      "dest": "/api/well-known"
     }
   ],
   "trailingSlash": false
