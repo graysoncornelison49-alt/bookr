@@ -8,6 +8,5 @@ window.BRAND = {
   organizerInitials: 'BE',
   supabaseUrl: 'https://wunbzxdmhsdczztbiyef.supabase.co',
   supabaseAnonKey: 'sb_publishable_xALchVeKDXLd6PYmHL2u3w_SNq0P4Ev',
-  squareApplicationId: 'sq0idp-bzsBd2c2j8vyIgGU0dYKuA',
-  squareLocationId: 'LDYDFPFJYMAC1',
+  stripePublishableKey: 'pk_live_51TeGkv5sNiFT46t53DKKX4arTQOp6sAV74Uk8sBkeXX3RRE33xs6waB4IOwZdLOIvUcemgY8W5DdrjM5nOkZrj1S00JiMOrKLO',
 };
