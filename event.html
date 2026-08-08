@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<script type="text/javascript" src="https://web.squarecdn.com/v1/square.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <style>
 :root {
   --bg: #0A0A0A;
@@ -56,6 +57,7 @@ body::before {
   mix-blend-mode: overlay;
 }
 
+/* NAV */
 .nav {
   position: sticky; top: 0;
   z-index: 100;
@@ -95,12 +97,15 @@ body::before {
 }
 .nav-back {
   display: inline-flex; align-items: center; gap: 8px;
-  font-size: 14px; font-weight: 500; color: var(--text-2);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
   padding: 8px 14px;
   border: 1px solid var(--line-2);
   background: var(--bg-2);
   border-radius: 10px;
   transition: all .2s;
+  letter-spacing: -0.005em;
 }
 .nav-back:hover { color: var(--text); background: var(--bg-3); border-color: var(--line-3); }
 
@@ -113,267 +118,676 @@ body::before {
   padding: 48px 0 120px;
 }
 
+/* LEFT SIDE */
 .event-hero {
-  width: 100%; aspect-ratio: 4/5;
+  width: 100%;
+  aspect-ratio: 4/5;
   background: var(--bg-2);
   border: 1px solid var(--line);
   border-radius: 24px;
-  overflow: hidden; position: relative;
+  overflow: hidden;
+  position: relative;
   margin-bottom: 32px;
   box-shadow: 0 40px 80px -40px rgba(0,0,0,0.6);
 }
-.event-hero img { width: 100%; height: 100%; object-fit: cover; }
+.event-hero img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  background: var(--bg-2);
+}
 .event-hero-placeholder {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   color: var(--text-3);
-  font-family: var(--serif); font-size: 120px; font-weight: 400; font-style: italic;
+  font-family: var(--serif);
+  font-size: 120px;
+  font-weight: 400;
+  font-style: italic;
   background: linear-gradient(135deg, var(--bg-3) 0%, var(--bg-2) 100%);
 }
 .event-tag {
-  position: absolute; top: 18px; left: 18px;
+  position: absolute;
+  top: 18px; left: 18px;
   padding: 7px 14px 7px 10px;
   background: rgba(10,10,10,0.75);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 100px;
-  font-size: 12px; font-weight: 500; color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
   display: flex; align-items: center; gap: 7px;
+  letter-spacing: -0.005em;
 }
 .event-tag::before {
-  content: ''; width: 6px; height: 6px;
-  border-radius: 50%; background: var(--accent);
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
   box-shadow: 0 0 8px var(--accent);
 }
 
 .event-meta-row {
-  font-size: 13px; color: var(--accent); font-weight: 500;
-  letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   margin-bottom: 16px;
-  display: flex; align-items: center; gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.event-meta-row::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+.event-meta-row::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--accent);
+}
 
 h1.event-title {
   font-family: var(--serif);
   font-size: clamp(42px, 5.5vw, 72px);
-  font-weight: 400; line-height: 1;
+  font-weight: 400;
+  line-height: 1;
   letter-spacing: -0.035em;
-  color: var(--text); margin-bottom: 28px;
+  color: var(--text);
+  margin-bottom: 28px;
 }
 
-.event-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 36px; }
+.event-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 36px;
+}
 .meta-card {
-  padding: 18px 20px; background: var(--bg-2);
-  border: 1px solid var(--line); border-radius: 14px;
-  display: flex; align-items: center; gap: 14px; transition: border-color .2s;
+  padding: 18px 20px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color .2s;
 }
 .meta-card:hover { border-color: var(--line-2); }
 .meta-icon-wrap {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: var(--accent-soft); color: var(--accent);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .meta-text { flex: 1; min-width: 0; }
-.meta-label { font-size: 11px; color: var(--text-3); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; }
-.meta-value { font-size: 14px; font-weight: 500; color: var(--text); letter-spacing: -0.005em; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta-label {
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.meta-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-.event-section-title { font-family: var(--serif); font-size: 22px; font-weight: 500; letter-spacing: -0.022em; color: var(--text); margin-bottom: 12px; }
-.event-desc { font-size: 15px; line-height: 1.65; color: var(--text-2); letter-spacing: -0.005em; margin-bottom: 36px; max-width: 560px; }
+.event-section-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.event-desc {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-2);
+  letter-spacing: -0.005em;
+  margin-bottom: 36px;
+  max-width: 560px;
+}
 
 .organizer {
-  display: flex; align-items: center; gap: 14px;
-  padding: 18px 20px; background: var(--bg-2);
-  border: 1px solid var(--line); border-radius: 14px; max-width: 380px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  max-width: 380px;
 }
 .org-avatar {
-  width: 44px; height: 44px; border-radius: 50%;
+  width: 44px; height: 44px;
+  border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: var(--bg); display: flex; align-items: center; justify-content: center;
-  font-family: var(--serif); font-size: 16px; font-weight: 600; flex-shrink: 0;
+  color: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
 }
-.org-info .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); margin-bottom: 3px; font-weight: 500; }
-.org-info .name { font-size: 15px; color: var(--text); font-weight: 500; }
-.org-verify { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--accent); font-weight: 500; margin-top: 2px; }
+.org-info { flex: 1; }
+.org-info .lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+.org-info .name {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.org-verify {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 500;
+  margin-top: 2px;
+}
 
+/* CHECKOUT PANEL */
 .checkout {
-  position: sticky; top: 88px; height: fit-content;
-  background: var(--bg-2); border: 1px solid var(--line);
-  border-radius: 20px; overflow: hidden;
+  position: sticky;
+  top: 88px;
+  height: fit-content;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
   box-shadow: 0 20px 60px -30px rgba(0,0,0,0.6);
 }
 .checkout-head {
-  padding: 22px 26px; border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 26px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: linear-gradient(180deg, rgba(255,107,107,0.02), transparent);
 }
-.checkout-title { font-family: var(--serif); font-size: 22px; font-weight: 500; letter-spacing: -0.022em; }
+.checkout-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+}
 .step-indicator { display: flex; gap: 6px; align-items: center; }
-.step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--line-3); transition: all .3s; }
+.step-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--line-3);
+  transition: all .3s;
+}
 .step-dot.active { background: var(--accent); width: 22px; border-radius: 3px; }
 .step-dot.done { background: var(--text); }
 
 .checkout-body { padding: 24px 26px 26px; }
 .checkout-step { display: none; }
 .checkout-step.active { display: block; animation: fadeUp .4s ease; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-.step-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 14px; font-weight: 600; }
-
-.tier {
-  padding: 16px 18px; border: 1px solid var(--line-2);
-  background: var(--bg-3); border-radius: 14px; margin-bottom: 8px;
-  cursor: pointer; transition: all .2s;
-  display: flex; align-items: center; justify-content: space-between;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.tier:hover:not(.sold-out) { border-color: var(--line-3); background: var(--bg-4); transform: translateX(2px); }
-.tier.selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent), 0 8px 24px -8px var(--accent-glow); }
+
+.step-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+/* TIERS */
+.tier {
+  padding: 16px 18px;
+  border: 1px solid var(--line-2);
+  background: var(--bg-3);
+  border-radius: 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+.tier:hover:not(.sold-out) {
+  border-color: var(--line-3);
+  background: var(--bg-4);
+  transform: translateX(2px);
+}
+.tier.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 1px var(--accent), 0 8px 24px -8px var(--accent-glow);
+}
 .tier.sold-out { opacity: 0.4; cursor: not-allowed; }
 .tier-left { flex: 1; min-width: 0; }
-.tier-name { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
-.tier-desc { font-size: 12px; color: var(--text-2); }
-.tier-price { font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--text); letter-spacing: -0.015em; }
-.tier-price em { font-style: italic; font-weight: 400; color: var(--text-3); font-size: 15px; }
+.tier-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+.tier-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  letter-spacing: -0.005em;
+}
+.tier-price {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.015em;
+}
+.tier-price em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-3);
+  font-size: 15px;
+}
 .tier.selected .tier-price { color: var(--accent); }
 .tier.selected .tier-price em { color: var(--accent); }
 
+/* QUANTITY */
 .qty-wrap {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 18px; background: var(--bg-3);
-  border: 1px solid var(--line-2); border-radius: 14px;
-  margin-top: 14px; margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  margin-top: 14px;
+  margin-bottom: 20px;
 }
-.qty-wrap .lbl { font-size: 13px; color: var(--text); font-weight: 500; }
+.qty-wrap .lbl {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
 .qty-controls { display: flex; align-items: center; gap: 14px; }
 .qty-btn {
-  width: 30px; height: 30px; border-radius: 8px;
-  border: 1px solid var(--line-2); color: var(--text);
-  background: var(--bg-4); display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 500; transition: all .15s;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--line-2);
+  color: var(--text);
+  background: var(--bg-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all .15s;
 }
 .qty-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
 .qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.qty-display { font-family: var(--serif); font-size: 20px; font-weight: 500; min-width: 26px; text-align: center; }
-
-.summary { padding: 14px 18px; background: var(--bg-3); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 18px; }
-.sum-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 5px 0; color: var(--text-2); }
-.sum-row.total { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 11px; color: var(--text); font-weight: 500; }
-.sum-row.total .v { font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--accent); }
-
-.form-group { margin-bottom: 12px; }
-.form-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); margin-bottom: 6px; font-weight: 600; }
-.form-input {
-  width: 100%; padding: 13px 16px;
-  background: var(--bg-3); border: 1px solid var(--line-2);
-  border-radius: 12px; font-size: 15px; color: var(--text); transition: all .15s;
+.qty-display {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  min-width: 26px;
+  text-align: center;
+  letter-spacing: -0.015em;
 }
-.form-input:focus { outline: none; border-color: var(--accent); background: var(--bg-4); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* SUMMARY */
+.summary {
+  padding: 14px 18px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+.sum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 5px 0;
+  color: var(--text-2);
+  letter-spacing: -0.005em;
+}
+.sum-row.total {
+  border-top: 1px solid var(--line);
+  margin-top: 8px;
+  padding-top: 11px;
+  color: var(--text);
+  font-weight: 500;
+}
+.sum-row.total .v {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--accent);
+}
+
+/* FORM */
+.form-group { margin-bottom: 12px; }
+.form-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.form-input {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--text);
+  transition: all .15s;
+  letter-spacing: -0.005em;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg-4);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
 .form-input::placeholder { color: var(--text-3); }
 
+/* BUTTONS */
 .btn {
-  width: 100%; padding: 15px 22px; border-radius: 14px;
-  font-size: 14px; font-weight: 500; transition: all .2s cubic-bezier(.2,.6,.2,1);
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  padding: 15px 22px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all .2s cubic-bezier(.2,.6,.2,1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: -0.005em;
 }
-.btn-primary { background: var(--text); color: var(--bg); box-shadow: 0 2px 8px -2px rgba(245,242,238,0.2); }
-.btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 28px -8px rgba(245,242,238,0.35); }
+.btn-primary {
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: 0 2px 8px -2px rgba(245,242,238,0.2);
+}
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -8px rgba(245,242,238,0.35);
+}
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-ghost { background: transparent; color: var(--text-2); padding: 10px; font-size: 13px; }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-2);
+  padding: 10px;
+  font-size: 13px;
+}
 .btn-ghost:hover { color: var(--text); }
-.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--line-2); }
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line-2);
+}
 .btn-outline:hover { background: var(--bg-3); border-color: var(--line-3); }
 
-.step-actions { margin-top: 18px; display: flex; flex-direction: column; gap: 6px; }
+.step-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-#apple-pay-btn-wrap { margin-bottom: 14px; display: none; }
+/* APPLE PAY BUTTON */
+#apple-pay-btn-wrap {
+  margin-bottom: 14px;
+  display: none;
+}
 #apple-pay-btn-wrap.visible { display: block; }
 #apple-pay-button {
-  width: 100%; height: 48px; border-radius: 14px;
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  background-color: black;
+  background-image: -webkit-named-image(apple-pay-logo-white);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto 60%;
+  cursor: pointer;
+  border: none;
   -webkit-appearance: -apple-pay-button;
   appearance: -apple-pay-button;
   -apple-pay-button-type: plain;
   -apple-pay-button-style: black;
 }
 .pay-divider {
-  display: none; align-items: center; gap: 10px; margin-bottom: 14px;
-  font-size: 12px; color: var(--text-3); letter-spacing: 0.04em; text-transform: uppercase;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 .pay-divider.visible { display: flex; }
-.pay-divider::before, .pay-divider::after { content: ''; flex: 1; height: 1px; background: var(--line-2); }
-
-#square-card-container { margin-bottom: 14px; min-height: 80px; }
-#square-error {
-  color: var(--danger); font-size: 13px; margin-top: 10px;
-  padding: 10px 14px; background: rgba(224,68,68,0.08);
-  border: 1px solid rgba(224,68,68,0.18); border-radius: 10px;
+.pay-divider::before, .pay-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line-2);
 }
-#square-error:empty { display: none; }
+
+#stripe-payment-element { margin-bottom: 14px; }
+#stripe-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(224,68,68,0.08);
+  border: 1px solid rgba(224,68,68,0.18);
+  border-radius: 10px;
+}
+#stripe-error:empty { display: none; }
 
 .secure-note {
-  display: flex; align-items: center; gap: 9px;
-  padding: 10px 14px; border: 1px solid var(--line);
-  background: var(--bg-3); border-radius: 10px; margin-top: 14px;
-  font-size: 12px; color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  background: var(--bg-3);
+  border-radius: 10px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-2);
+  letter-spacing: -0.005em;
 }
 .secure-note svg { color: var(--success); flex-shrink: 0; }
 
-#processing { display: none; padding: 40px 0; text-align: center; }
+#processing {
+  display: none;
+  padding: 40px 0;
+  text-align: center;
+}
 #processing.active { display: block; animation: fadeUp .4s ease; }
 .spinner {
-  width: 40px; height: 40px; border: 2px solid var(--line-2);
-  border-top-color: var(--accent); border-radius: 50%;
-  animation: spin 0.9s linear infinite; margin: 0 auto 22px;
+  width: 40px; height: 40px;
+  border: 2px solid var(--line-2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin: 0 auto 22px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.processing-msg { font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-.processing-sub { font-size: 13px; color: var(--text-2); }
+.processing-msg {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.processing-sub { font-size: 13px; color: var(--text-2); letter-spacing: -0.005em; }
 
+/* CONFIRMATION */
 .confirm {
-  display: none; max-width: 560px; margin: 0 auto;
-  padding: 60px 32px; position: relative; z-index: 2;
+  display: none;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 60px 32px;
+  position: relative; z-index: 2;
 }
 .confirm.active { display: block; animation: fadeUp .5s ease; }
-.confirm-icon-wrap { display: flex; justify-content: center; margin-bottom: 28px; }
+.confirm-icon-wrap {
+  display: flex; justify-content: center;
+  margin-bottom: 28px;
+  position: relative;
+}
 .confirm-icon {
-  width: 68px; height: 68px; border-radius: 20px;
+  width: 68px; height: 68px;
+  border-radius: 20px;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-  color: var(--bg); display: flex; align-items: center; justify-content: center;
+  color: var(--bg);
+  display: flex; align-items: center; justify-content: center;
   box-shadow: 0 16px 40px -10px var(--accent-glow);
 }
-.confirm h2 { font-family: var(--serif); font-size: 44px; font-weight: 400; letter-spacing: -0.035em; text-align: center; margin-bottom: 12px; line-height: 1.05; }
+.confirm h2 {
+  font-family: var(--serif);
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  text-align: center;
+  margin-bottom: 12px;
+  line-height: 1.05;
+}
 .confirm h2 em { font-style: italic; color: var(--accent); }
-.confirm-sub { font-size: 15px; color: var(--text-2); text-align: center; margin-bottom: 36px; }
+.confirm-sub {
+  font-size: 15px;
+  color: var(--text-2);
+  text-align: center;
+  margin-bottom: 36px;
+  letter-spacing: -0.005em;
+}
 .confirm-sub span { color: var(--text); font-weight: 500; }
 
-.confirm-ticket { background: var(--bg-2); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6); }
+.confirm-ticket {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+}
 .ticket-top {
-  padding: 32px 28px 28px; text-align: center;
+  padding: 32px 28px 28px;
+  text-align: center;
   border-bottom: 1px dashed var(--line-2);
   background: linear-gradient(180deg, rgba(255,107,107,0.05) 0%, transparent 100%);
   position: relative;
 }
-.ticket-top::before, .ticket-top::after { content: ''; position: absolute; bottom: -9px; width: 18px; height: 18px; background: var(--bg); border-radius: 50%; }
+.ticket-top::before,
+.ticket-top::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  width: 18px; height: 18px;
+  background: var(--bg);
+  border-radius: 50%;
+}
 .ticket-top::before { left: -9px; }
 .ticket-top::after { right: -9px; }
-.ticket-event { font-family: var(--serif); font-size: 24px; font-weight: 500; letter-spacing: -0.022em; margin-bottom: 18px; line-height: 1.2; }
-.qr-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
-.qr-wrap svg { border-radius: 10px; padding: 14px; background: var(--text); }
-.ticket-ref { font-family: ui-monospace, 'SF Mono', monospace; font-size: 12px; color: var(--text-3); letter-spacing: 0.1em; font-weight: 500; }
+.ticket-event {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  margin-bottom: 18px;
+  line-height: 1.2;
+}
+.qr-wrap {
+  display: flex; justify-content: center;
+  margin-bottom: 18px;
+}
+.qr-wrap svg {
+  border-radius: 10px;
+  padding: 14px;
+  background: var(--text);
+}
+.ticket-ref {
+  font-family: ui-monospace, 'SF Mono', monospace;
+  font-size: 12px;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
 .ticket-details { padding: 22px 28px 26px; }
-.detail-row { display: flex; justify-content: space-between; padding: 9px 0; font-size: 14px; }
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+  font-size: 14px;
+  letter-spacing: -0.005em;
+}
 .detail-row .k { color: var(--text-3); }
 .detail-row .v { color: var(--text); font-weight: 500; }
-.confirm-actions { margin-top: 24px; display: flex; gap: 10px; }
+.confirm-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 10px;
+}
 .confirm-actions .btn { padding: 13px 20px; font-size: 13px; flex: 1; }
 
-.loading-page { min-height: 70vh; display: flex; align-items: center; justify-content: center; color: var(--text-3); font-size: 14px; gap: 10px; }
-.loading-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: livepulse 1.4s ease-in-out infinite; }
-@keyframes livepulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.loading-page {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  font-size: 14px;
+  gap: 10px;
+  letter-spacing: -0.005em;
+}
+.loading-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: livepulse 1.4s ease-in-out infinite;
+}
+@keyframes livepulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
 
 @media (max-width: 960px) {
   .nav { padding: 14px 20px; }
   .container { padding: 0 20px; }
-  .event-wrap { grid-template-columns: 1fr; gap: 28px; padding: 28px 0 60px; }
+  .event-wrap {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 28px 0 60px;
+  }
   .checkout { position: static; }
   .event-meta { grid-template-columns: 1fr; }
   .confirm { padding: 40px 20px; }
@@ -404,15 +818,20 @@ h1.event-title {
 <div id="confirmInner" class="confirm">
   <div class="confirm-icon-wrap">
     <div class="confirm-icon">
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
     </div>
   </div>
   <h2>You're <em>in.</em></h2>
   <p class="confirm-sub">Your ticket has been sent to <span id="cEmailLine"></span></p>
+
   <div class="confirm-ticket">
     <div class="ticket-top">
       <div class="ticket-event" id="cEventName">—</div>
-      <div class="qr-wrap"><svg id="qrCode" width="140" height="140" viewBox="0 0 140 140"></svg></div>
+      <div class="qr-wrap">
+        <svg id="qrCode" width="140" height="140" viewBox="0 0 140 140"></svg>
+      </div>
       <div class="ticket-ref" id="cRef">—</div>
     </div>
     <div class="ticket-details">
@@ -422,6 +841,7 @@ h1.event-title {
       <div class="detail-row"><span class="k">Paid on</span><span class="v" id="cPayTime">—</span></div>
     </div>
   </div>
+
   <div class="confirm-actions">
     <a href="/" class="btn btn-outline">Back to events</a>
     <button onclick="window.print()" class="btn btn-primary">Save ticket</button>
@@ -442,16 +862,17 @@ let EVENT = null;
 let selTier = 0;
 let qty = 1;
 let currentStep = 1;
-let squarePayments = null;
-let squareCard = null;
-let squareApplePay = null;
 
 async function loadEvent() {
   if (!eventId) {
     document.getElementById('main-content').innerHTML = '<div class="loading-page">Event not found</div>';
     return;
   }
-  const { data, error } = await db.from('events').select('*, ticket_tiers(*)').eq('id', eventId).single();
+  const { data, error } = await db
+    .from('events')
+    .select('*, ticket_tiers(*)')
+    .eq('id', eventId)
+    .single();
   if (error || !data) {
     document.getElementById('main-content').innerHTML = '<div class="loading-page">Event not found</div>';
     return;
@@ -464,42 +885,110 @@ async function loadEvent() {
 function formatDate(d) {
   if (!d) return 'TBA';
   if (d.includes && d.includes(',')) return d;
-  try { const dt = new Date(d); if (isNaN(dt)) return d; return dt.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' }); } catch { return d; }
+  try {
+    const dt = new Date(d);
+    if (isNaN(dt)) return d;
+    return dt.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  } catch { return d; }
 }
 function formatTime(t) {
   if (!t) return '';
-  if (t.includes(':')) { const [h,m] = t.split(':'); const hour = parseInt(h); const ampm = hour >= 12 ? 'PM' : 'AM'; const h12 = hour % 12 || 12; return `${h12}:${m} ${ampm}`; }
+  if (t.includes(':')) {
+    const [h,m] = t.split(':');
+    const hour = parseInt(h);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const h12 = hour % 12 || 12;
+    return `${h12}:${m} ${ampm}`;
+  }
   return t;
 }
 function shortDate(d) {
   if (!d) return 'TBA';
-  if (d.includes && d.includes(',')) { const parts = d.split(',').map(s => s.trim()); if (parts.length >= 2) return parts[1]; }
-  try { const dt = new Date(d); return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return d; }
+  if (d.includes && d.includes(',')) {
+    const parts = d.split(',').map(s => s.trim());
+    if (parts.length >= 2) return parts[1];
+  }
+  try {
+    const dt = new Date(d);
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  } catch { return d; }
 }
 
 function render() {
   const B = window.BRAND;
   const organizerName = B ? (B.organizerName || 'Bookr Events') : 'Bookr Events';
   const organizerInitials = B ? (B.organizerInitials || 'BE') : 'BE';
-  const img = EVENT.photo_url ? `<img src="${EVENT.photo_url}" alt="${EVENT.name}">` : `<div class="event-hero-placeholder">${(EVENT.name||'?').charAt(0)}</div>`;
+
+  const img = EVENT.photo_url
+    ? `<img src="${EVENT.photo_url}" alt="${EVENT.name}">`
+    : `<div class="event-hero-placeholder">${(EVENT.name||'?').charAt(0)}</div>`;
 
   document.getElementById('main-content').innerHTML = `
     <div class="event-wrap">
       <div class="event-left">
-        <div class="event-hero">${img}<div class="event-tag">${EVENT.category || 'Event'}</div></div>
+        <div class="event-hero">
+          ${img}
+          <div class="event-tag">${EVENT.category || 'Event'}</div>
+        </div>
+
         <div class="event-meta-row">${formatDate(EVENT.date)}${EVENT.time ? ' · ' + formatTime(EVENT.time) : ''}</div>
         <h1 class="event-title">${EVENT.name}</h1>
+
         <div class="event-meta">
-          <div class="meta-card"><div class="meta-icon-wrap"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2v4M13 2v4"/></svg></div><div class="meta-text"><div class="meta-label">Date</div><div class="meta-value">${shortDate(EVENT.date)}${EVENT.time ? ', ' + formatTime(EVENT.time) : ''}</div></div></div>
-          <div class="meta-card"><div class="meta-icon-wrap"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 18s6-5.5 6-10a6 6 0 10-12 0c0 4.5 6 10 6 10z"/><circle cx="10" cy="8" r="2"/></svg></div><div class="meta-text"><div class="meta-label">Location</div><div class="meta-value">${EVENT.venue || 'Venue TBA'}</div></div></div>
-          <div class="meta-card"><div class="meta-icon-wrap"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="3"/><path d="M13 10a3 3 0 100-6M2 17c0-2.5 2.25-4.5 5-4.5s5 2 5 4.5M13 13c2 0 5 1.5 5 4"/></svg></div><div class="meta-text"><div class="meta-label">Capacity</div><div class="meta-value">${EVENT.capacity || '—'} people</div></div></div>
-          <div class="meta-card"><div class="meta-icon-wrap"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="16" height="10" rx="1.5"/><path d="M6 10v2M14 10v2M10 10v2"/></svg></div><div class="meta-text"><div class="meta-label">Category</div><div class="meta-value">${EVENT.category || 'Event'}</div></div></div>
+          <div class="meta-card">
+            <div class="meta-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2v4M13 2v4"/></svg>
+            </div>
+            <div class="meta-text">
+              <div class="meta-label">Date</div>
+              <div class="meta-value">${shortDate(EVENT.date)}${EVENT.time ? ', ' + formatTime(EVENT.time) : ''}</div>
+            </div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 18s6-5.5 6-10a6 6 0 10-12 0c0 4.5 6 10 6 10z"/><circle cx="10" cy="8" r="2"/></svg>
+            </div>
+            <div class="meta-text">
+              <div class="meta-label">Location</div>
+              <div class="meta-value">${EVENT.venue || 'Venue TBA'}</div>
+            </div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="3"/><path d="M13 10a3 3 0 100-6M2 17c0-2.5 2.25-4.5 5-4.5s5 2 5 4.5M13 13c2 0 5 1.5 5 4"/></svg>
+            </div>
+            <div class="meta-text">
+              <div class="meta-label">Capacity</div>
+              <div class="meta-value">${EVENT.capacity || '—'} people</div>
+            </div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="16" height="10" rx="1.5"/><path d="M6 10v2M14 10v2M10 10v2"/></svg>
+            </div>
+            <div class="meta-text">
+              <div class="meta-label">Category</div>
+              <div class="meta-value">${EVENT.category || 'Event'}</div>
+            </div>
+          </div>
         </div>
-        ${EVENT.description ? `<div class="event-section-title">About this event</div><div class="event-desc">${EVENT.description}</div>` : ''}
+
+        ${EVENT.description ? `
+          <div class="event-section-title">About this event</div>
+          <div class="event-desc">${EVENT.description}</div>
+        ` : ''}
+
         <div class="event-section-title">Hosted by</div>
         <div class="organizer">
           <div class="org-avatar">${organizerInitials}</div>
-          <div class="org-info"><div class="lbl">Presented by</div><div class="name">${organizerName}</div><div class="org-verify"><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1L2 3v3c0 2.5 1.7 4.5 4 5 2.3-0.5 4-2.5 4-5V3L6 1zm-.5 6.5L3 5l.7-.7L5.5 6l2.8-2.8.7.7L5.5 7.5z"/></svg>Verified host</div></div>
+          <div class="org-info">
+            <div class="lbl">Presented by</div>
+            <div class="name">${organizerName}</div>
+            <div class="org-verify">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1L2 3v3c0 2.5 1.7 4.5 4 5 2.3-0.5 4-2.5 4-5V3L6 1zm-.5 6.5L3 5l.7-.7L5.5 6l2.8-2.8.7.7L5.5 7.5z"/></svg>
+              Verified host
+            </div>
+          </div>
         </div>
       </div>
 
@@ -513,6 +1002,7 @@ function render() {
           </div>
         </div>
         <div class="checkout-body">
+
           <div class="checkout-step active" id="step1">
             <div class="step-label">Select a ticket</div>
             <div id="tierList"></div>
@@ -526,17 +1016,32 @@ function render() {
             </div>
             <div class="summary" id="summary1"></div>
             <div class="step-actions">
-              <button class="btn btn-primary" onclick="goToStep(2)">Continue <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button class="btn btn-primary" onclick="goToStep(2)">
+                Continue
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
             </div>
           </div>
 
           <div class="checkout-step" id="step2">
             <div class="step-label">Your details</div>
-            <div class="form-group"><label class="form-label">Full name</label><input class="form-input" type="text" id="buyerName" placeholder="Your name" autocomplete="name"></div>
-            <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="buyerEmail" placeholder="you@example.com" autocomplete="email"></div>
-            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" type="tel" id="buyerPhone" placeholder="(555) 555-5555" autocomplete="tel"></div>
+            <div class="form-group">
+              <label class="form-label">Full name</label>
+              <input class="form-input" type="text" id="buyerName" placeholder="Your name" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" type="email" id="buyerEmail" placeholder="you@example.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input class="form-input" type="tel" id="buyerPhone" placeholder="(555) 555-5555" autocomplete="tel">
+            </div>
             <div class="step-actions">
-              <button class="btn btn-primary" onclick="goToStep(3)">Continue to payment <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button class="btn btn-primary" onclick="goToStep(3)">
+                Continue to payment
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8m0 0L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
               <button class="btn btn-ghost" onclick="goToStep(1)">Back</button>
             </div>
           </div>
@@ -548,14 +1053,16 @@ function render() {
               <button id="apple-pay-button" onclick="handleApplePay()"></button>
             </div>
             <div class="pay-divider" id="pay-divider">or pay with card</div>
-            <div id="square-card-container"></div>
-            <div id="square-error"></div>
+            <div id="stripe-payment-element"></div>
+            <div id="stripe-error"></div>
             <div class="secure-note">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2.5" y="6" width="9" height="6" rx="1"/><path d="M4.5 6V4a2.5 2.5 0 015 0v2"/></svg>
-              <span>Secured by Square · Your card details are encrypted</span>
+              <span>Secured by Stripe · Your card details are encrypted</span>
             </div>
             <div class="step-actions">
-              <button class="btn btn-primary" id="payBtn" onclick="handlePayment()">Pay <span id="payBtnAmount">$0.00</span></button>
+              <button class="btn btn-primary" id="payBtn" onclick="handlePayment()">
+                Pay <span id="payBtnAmount">$0.00</span>
+              </button>
               <button class="btn btn-ghost" onclick="goToStep(2)">Back</button>
             </div>
           </div>
@@ -565,6 +1072,7 @@ function render() {
             <div class="processing-msg">Processing your payment…</div>
             <div class="processing-sub">This will only take a moment.</div>
           </div>
+
         </div>
       </div>
     </div>
@@ -577,15 +1085,25 @@ function render() {
 function renderTiers() {
   const html = EVENT.tiers.map((t, i) => {
     const soldOut = (t.sold||0) >= (t.capacity||t.cap||999);
-    return `<div class="tier ${i === selTier ? 'selected' : ''} ${soldOut ? 'sold-out' : ''}" onclick="${soldOut ? '' : `selectTier(${i})`}">
-      <div class="tier-left"><div class="tier-name">${t.name}</div>${t.description ? `<div class="tier-desc">${t.description}</div>` : ''}</div>
-      <div class="tier-price">${soldOut ? 'Sold' : '<em>$</em>' + t.price}</div>
-    </div>`;
+    return `
+      <div class="tier ${i === selTier ? 'selected' : ''} ${soldOut ? 'sold-out' : ''}"
+           onclick="${soldOut ? '' : `selectTier(${i})`}">
+        <div class="tier-left">
+          <div class="tier-name">${t.name}</div>
+          ${t.description ? `<div class="tier-desc">${t.description}</div>` : ''}
+        </div>
+        <div class="tier-price">${soldOut ? 'Sold' : '<em>$</em>' + t.price}</div>
+      </div>
+    `;
   }).join('');
   document.getElementById('tierList').innerHTML = html;
 }
 
-function selectTier(i) { selTier = i; renderTiers(); updateSummary(); }
+function selectTier(i) {
+  selTier = i;
+  renderTiers();
+  updateSummary();
+}
 
 function setQty(delta) {
   const newQty = qty + delta;
@@ -604,14 +1122,16 @@ function updateSummary() {
   const sub = t.price * qty;
   const fee = Math.round(sub * 0.1 * 100) / 100;
   const total = sub + fee;
-  const html = `
+
+  const summaryHtml = `
     <div class="sum-row"><span>${t.name} × ${qty}</span><span class="v">$${sub.toFixed(2)}</span></div>
     <div class="sum-row"><span>Service fee</span><span class="v">$${fee.toFixed(2)}</span></div>
-    <div class="sum-row total"><span>Total</span><span class="v">$${total.toFixed(2)}</span></div>`;
+    <div class="sum-row total"><span>Total</span><span class="v">$${total.toFixed(2)}</span></div>
+  `;
   const s1 = document.getElementById('summary1');
   const s3 = document.getElementById('summary3');
-  if (s1) s1.innerHTML = html;
-  if (s3) s3.innerHTML = html;
+  if (s1) s1.innerHTML = summaryHtml;
+  if (s3) s3.innerHTML = summaryHtml;
   const pba = document.getElementById('payBtnAmount');
   if (pba) pba.textContent = `$${total.toFixed(2)}`;
 }
@@ -627,17 +1147,21 @@ function goToStep(n) {
     if (!phone) { flashField('buyerPhone'); ok = false; }
     if (!ok) return;
   }
+
   document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
   document.getElementById('step' + n).classList.add('active');
   currentStep = n;
+
   document.querySelectorAll('.step-dot').forEach((dot, i) => {
     dot.classList.remove('active', 'done');
     if (i + 1 < n) dot.classList.add('done');
     if (i + 1 === n) dot.classList.add('active');
   });
+
   const titles = {1: 'Tickets', 2: 'Your details', 3: 'Payment'};
   document.getElementById('checkoutTitle').textContent = titles[n];
-  if (n === 3 && !squareCard) initSquare();
+
+  if (n === 3 && !stripePaymentElement) initStripe();
 }
 
 function flashField(id) {
@@ -647,186 +1171,205 @@ function flashField(id) {
   setTimeout(() => el.style.borderColor = '', 1600);
 }
 
-async function initSquare() {
-  if (!window.Square) { console.error('Square.js not loaded'); return; }
+const stripeInstance = Stripe(window.BRAND.stripePublishableKey);
+let stripeElements = null;
+let stripePaymentElement = null;
+let paymentRequest = null;
+let currentClientSecret = null;
+
+async function initStripe() {
+  if (!EVENT) return;
   const t = EVENT.tiers[selTier];
   const sub = t.price * qty;
   const fee = Math.round(sub * 0.1 * 100) / 100;
   const total = sub + fee;
-  const totalCents = Math.round(total * 100).toString();
-
-  try {
-    squarePayments = Square.payments(window.BRAND.squareApplicationId, window.BRAND.squareLocationId);
-
-    // Card
-    squareCard = await squarePayments.card({
-      style: {
-        '.input-container': { borderColor: 'rgba(255,255,255,0.12)', borderRadius: '12px' },
-        '.input-container.is-focus': { borderColor: '#FF6B6B' },
-        '.input-container.is-error': { borderColor: '#E04444' },
-        input: { color: '#F5F2EE', fontFamily: 'Inter, sans-serif' },
-        'input::placeholder': { color: '#6B6760' },
-        '.message-text': { color: '#A8A39B' },
-        '.message-icon': { color: '#A8A39B' },
-      }
-    });
-    await squareCard.attach('#square-card-container');
-
-    // Apple Pay
-    try {
-      const paymentRequest = squarePayments.paymentRequest({
-        countryCode: 'US',
-        currencyCode: 'USD',
-        total: { amount: totalCents, label: EVENT.name },
-      });
-      squareApplePay = await squarePayments.applePay(paymentRequest);
-      const appleWrap = document.getElementById('apple-pay-btn-wrap');
-      const divider = document.getElementById('pay-divider');
-      if (appleWrap) appleWrap.classList.add('visible');
-      if (divider) divider.classList.add('visible');
-    } catch(appleErr) {
-      console.log('Apple Pay not available:', appleErr.message);
-    }
-
-  } catch(err) {
-    console.error('Square init error:', err);
-    document.getElementById('square-error').textContent = 'Payment form failed to load. Please refresh.';
-  }
-}
-
-async function handleApplePay() {
-  if (!squareApplePay) return;
-  const errorDiv = document.getElementById('square-error');
-  errorDiv.textContent = '';
-  try {
-    const result = await squareApplePay.tokenize();
-    if (result.status === 'OK') {
-      await processPayment(result.token);
-    } else {
-      errorDiv.textContent = result.errors?.[0]?.message || 'Apple Pay failed.';
-    }
-  } catch(err) {
-    errorDiv.textContent = err.message || 'Apple Pay failed.';
-  }
-}
-
-async function handlePayment() {
-  if (!squareCard) return;
-  const btn = document.getElementById('payBtn');
-  const errorDiv = document.getElementById('square-error');
-  errorDiv.textContent = '';
-  btn.disabled = true;
-
-  try {
-    const result = await squareCard.tokenize();
-    if (result.status === 'OK') {
-      await processPayment(result.token);
-    } else {
-      errorDiv.textContent = result.errors?.[0]?.message || 'Card error. Please check your details.';
-      btn.disabled = false;
-    }
-  } catch(err) {
-    errorDiv.textContent = err.message || 'Payment failed.';
-    btn.disabled = false;
-  }
-}
-
-async function processPayment(token) {
-  const t = EVENT.tiers[selTier];
-  const sub = t.price * qty;
-  const fee = Math.round(sub * 0.1 * 100) / 100;
-  const total = sub + fee;
-
-  document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('stepIndicator').style.display = 'none';
-  document.getElementById('processing').classList.add('active');
+  const totalCents = Math.round(total * 100);
 
   try {
     const res = await fetch('/api/create-payment-intent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        sourceId: token,
         amount: total,
         eventName: EVENT.name,
         tierName: t.name,
-        tierId: t.id,
-        eventId: EVENT.id,
-        buyerEmail: document.getElementById('buyerEmail').value.trim(),
-        buyerName: document.getElementById('buyerName').value.trim(),
-        buyerPhone: document.getElementById('buyerPhone').value.trim(),
-        quantity: qty,
+        buyerEmail: document.getElementById('buyerEmail').value.trim()
       })
     });
+    const { clientSecret, error } = await res.json();
+    if (error) throw new Error(error);
+    currentClientSecret = clientSecret;
 
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
+    // ── Apple Pay via Payment Request Button ──
+    // Must be created before elements() so it uses the same payment intent
+    paymentRequest = stripeInstance.paymentRequest({
+      country: 'US',
+      currency: 'usd',
+      total: {
+        label: EVENT.name,
+        amount: totalCents,
+      },
+      requestPayerName: true,
+      requestPayerEmail: true,
+    });
 
-    await showConfirmation(data.paymentId);
+    const prAvailability = await paymentRequest.canMakePayment();
+    console.log('Apple Pay availability:', prAvailability);
+
+    if (prAvailability && prAvailability.applePay) {
+      const appleWrap = document.getElementById('apple-pay-btn-wrap');
+      const divider = document.getElementById('pay-divider');
+      if (appleWrap) appleWrap.classList.add('visible');
+      if (divider) divider.classList.add('visible');
+
+      paymentRequest.on('paymentmethod', async (ev) => {
+        // Confirm the payment intent with the Apple Pay payment method
+        const { error: confirmError, paymentIntent } = await stripeInstance.confirmPayment({
+          clientSecret: currentClientSecret,
+          confirmParams: {
+            payment_method: ev.paymentMethod.id,
+            return_url: window.location.href,
+          },
+          redirect: 'if_required',
+        });
+
+        if (confirmError) {
+          ev.complete('fail');
+          document.getElementById('stripe-error').textContent = confirmError.message;
+        } else {
+          ev.complete('success');
+          document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
+          document.getElementById('stepIndicator').style.display = 'none';
+          document.getElementById('processing').classList.add('active');
+          await showConfirmation();
+        }
+      });
+    }
+
+    // ── Card payment via Payment Element ──
+    const appearance = {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#FF6B6B',
+        colorBackground: '#1C1C1C',
+        colorText: '#F5F2EE',
+        colorDanger: '#E04444',
+        fontFamily: 'Inter, sans-serif',
+        borderRadius: '12px',
+        spacingUnit: '4px',
+      }
+    };
+
+    stripeElements = stripeInstance.elements({ appearance, clientSecret });
+    stripePaymentElement = stripeElements.create('payment', {
+      wallets: { applePay: 'never', googlePay: 'never' }
+    });
+    stripePaymentElement.mount('#stripe-payment-element');
+  } catch(err) {
+    console.error('initStripe error:', err);
+    document.getElementById('stripe-error').textContent = 'Error: ' + err.message;
+  }
+}
+
+function handleApplePay() {
+  if (paymentRequest) paymentRequest.show();
+}
+
+async function handlePayment() {
+  const btn = document.getElementById('payBtn');
+  const errorDiv = document.getElementById('stripe-error');
+  errorDiv.textContent = '';
+  btn.disabled = true;
+
+  document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('stepIndicator').style.display = 'none';
+  document.getElementById('processing').classList.add('active');
+
+  try {
+    const { error } = await stripeInstance.confirmPayment({
+      elements: stripeElements,
+      confirmParams: { receipt_email: document.getElementById('buyerEmail').value.trim() },
+      redirect: 'if_required'
+    });
+
+    if (error) {
+      document.getElementById('processing').classList.remove('active');
+      document.getElementById('stepIndicator').style.display = 'flex';
+      document.getElementById('step3').classList.add('active');
+      errorDiv.textContent = error.message;
+      btn.disabled = false;
+    } else {
+      document.getElementById('processing').classList.remove('active');
+      await showConfirmation();
+    }
   } catch(err) {
     document.getElementById('processing').classList.remove('active');
     document.getElementById('stepIndicator').style.display = 'flex';
     document.getElementById('step3').classList.add('active');
-    document.getElementById('square-error').textContent = err.message || 'Payment failed. Please try again.';
-    document.getElementById('payBtn').disabled = false;
+    errorDiv.textContent = 'Payment failed. Please try again.';
+    btn.disabled = false;
   }
 }
 
-async function showConfirmation(paymentId) {
+async function showConfirmation() {
   const t = EVENT.tiers[selTier];
   const sub = t.price * qty;
   const fee = Math.round(sub * 0.1 * 100) / 100;
   const total = (sub + fee).toFixed(2);
-  const ref = 'BKR-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  const ref = 'TKT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  const buyerName = document.getElementById('buyerName').value.trim();
-  const buyerEmail = document.getElementById('buyerEmail').value.trim();
-  const buyerPhone = document.getElementById('buyerPhone').value.trim();
 
   await db.from('orders').insert({
     event_id: EVENT.id,
     tier_id: t.id,
-    buyer_name: buyerName,
-    buyer_email: buyerEmail,
-    buyer_phone: buyerPhone || null,
+    buyer_name: document.getElementById('buyerName') ? document.getElementById('buyerName').value.trim() : 'Apple Pay',
+    buyer_email: document.getElementById('buyerEmail') ? document.getElementById('buyerEmail').value.trim() : '',
+    buyer_phone: document.getElementById('buyerPhone') ? document.getElementById('buyerPhone').value.trim() : '',
     quantity: qty,
     total: parseFloat(total),
-    status: 'paid',
-    stripe_payment_id: paymentId,
+    status: 'paid'
   });
 
-  await db.from('ticket_tiers').update({ sold: (t.sold || 0) + qty }).eq('id', t.id);
+  // Increment sold count on the tier
+  await db.from('ticket_tiers')
+    .update({ sold: (t.sold || 0) + qty })
+    .eq('id', t.id);
 
+  // Send ticket confirmation email
   try {
     await fetch('/api/send-ticket-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        buyerEmail, buyerName,
+        buyerEmail: document.getElementById('buyerEmail') ? document.getElementById('buyerEmail').value.trim() : '',
+        buyerName: document.getElementById('buyerName') ? document.getElementById('buyerName').value.trim() : '',
         eventName: EVENT.name,
         tierName: t.name,
         quantity: qty,
-        total,
-        ref,
+        total: total,
+        ref: ref,
         eventDate: EVENT.date ? formatDate(EVENT.date) : '',
         eventVenue: EVENT.venue || '',
       })
     });
   } catch(emailErr) {
     console.error('Email send failed:', emailErr);
+    // Don't block confirmation if email fails
   }
 
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('confirmInner').classList.add('active');
+
   document.getElementById('cEventName').textContent = EVENT.name;
   document.getElementById('cRef').textContent = ref;
-  document.getElementById('cEmailLine').textContent = buyerEmail;
-  document.getElementById('cName').textContent = buyerName;
+  document.getElementById('cEmailLine').textContent = document.getElementById('buyerEmail') ? document.getElementById('buyerEmail').value.trim() : '';
+  document.getElementById('cName').textContent = document.getElementById('buyerName') ? document.getElementById('buyerName').value.trim() : 'Apple Pay';
   document.getElementById('cTier').textContent = `${t.name} × ${qty}`;
   document.getElementById('cTotal').textContent = `$${total}`;
   document.getElementById('cPayTime').textContent = `${dateStr} at ${timeStr}`;
+
   generateQR(ref);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -844,7 +1387,8 @@ function generateQR(ref) {
   }));
   let rects = '';
   for (let row = 0; row < mc; row++) for (let col = 0; col < mc; col++) if (m[row][col]) {
-    rects += `<rect x="${off+col*ms}" y="${off+row*ms}" width="${ms}" height="${ms}" fill="#0A0A0A" rx="0.5"/>`;
+    const x = off+col*ms, y = off+row*ms;
+    rects += `<rect x="${x}" y="${y}" width="${ms}" height="${ms}" fill="#0A0A0A" rx="0.5"/>`;
   }
   svg.innerHTML = rects;
 }
