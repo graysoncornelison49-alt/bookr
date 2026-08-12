@@ -1364,7 +1364,7 @@ async function showConfirmation() {
 
   document.getElementById('cEventName').textContent = EVENT.name;
   document.getElementById('cRef').textContent = ref;
-  document.getElementById('cEmailLine').textContent = document.getElementById('buyerEmail') ? document.getElementById('buyerEmail').value.trim() : '';
+
   document.getElementById('cName').textContent = document.getElementById('buyerName') ? document.getElementById('buyerName').value.trim() : 'Apple Pay';
   document.getElementById('cTier').textContent = `${t.name} × ${qty}`;
   document.getElementById('cTotal').textContent = `$${total}`;
